@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.oy.dao.PostDao">
+	<resultMap type="Post" id="PostResultMap">
+		<id property="id" column="post_id"/>
+		<result property="title" column="title"/>
+		<result property="content" column="content"/>		
+		<result property="date" column="create_date"/>
+		<association property="admin" javaType="Admin">
+			<id property="id" column="admin_id"/>
+			<result property="username" column="username"/>
+		</association>
+	</resultMap>
+	<select id="findPosts" parameterType="Map" resultMap="PostResultMap">
+		select a.admin_id ,a.username,a.password,p.post_id,p.title,p.content,p.create_date from admin_tb a,post_tb p 
+		where p.admin_id = a.admin_id
+		<if test="title!=null and title!=''">
+			and p.title like #{title}
+		</if>		
+	</select>
+	<select id="getCount" parameterType="Map" resultType="Integer">
+		select count(*) from post_tb
+		<where>
+			<if test="title!=null and title!=''">
+				title like #{title}
+			</if>
+		</where>
+	</select>
+	<insert id="addPost" useGeneratedKeys="true" keyProperty="post_id">
+		insert into post_tb(title,content,admin_id,create_date)values(#{title},#{content},#{admin.id},#{date})
+	</insert>
+	<update id="updatePost" parameterType="Post">
+		update post_tb set title=#{title},content=#{content},admin_id=#{admin.id},create_date=#{date} where post_id=#{id}
+	</update>
+	<delete id="deletePost" parameterType="Integer">
+		delete  from post_tb where post_id=#{id}
+	</delete>
+	<select id="findPostById" parameterType="Integer" resultMap="PostResultMap">
+		select a.admin_id,a.username,p.title,p.content,p.create_date from admin_tb a,post_tb p where
+		a.admin_id=p.admin_id and post_id=#{id}
+	</select>	
+</mapper>

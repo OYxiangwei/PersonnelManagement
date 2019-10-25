@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oy.dao.DepartmentDao">
+	<resultMap type="Department" id="DepartmentResultMap">
+		<id property="id" column="depart_id"/>
+		<result property="name" column="depart_name"/>
+		<result property="description" column="depart_description"/>
+	</resultMap>
+	
+	<select id="finDepartments" parameterType="Map" resultMap="DepartmentResultMap">
+		select * from department_tb <where>
+			<if test="name!=null and name!='' ">
+			and	depart_name like #{name}
+			</if>
+		</where>
+	</select>
+	<select id="getCount" parameterType="Map" resultType="Integer">
+		select count(*) from department_tb <where>
+			<if test="name!=null and name!='' ">
+				depart_name like #{name}
+			</if>
+		</where>
+	</select>
+	<insert id="addDepartment" useGeneratedKeys="true" keyProperty="depart_id">
+		insert into department_tb(depart_name,depart_description)values(#{name},#{description})
+	</insert>
+	<update id="updateDepartment" parameterType="Department" >
+		update department_tb set depart_name=#{name},depart_description=#{description} where depart_id= #{id}	
+	</update>
+	<delete id="deleteDepartment" parameterType="Integer">
+		delete  from department_tb where depart_id=#{id}
+	</delete>
+
+</mapper>
